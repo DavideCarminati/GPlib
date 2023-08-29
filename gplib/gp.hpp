@@ -88,7 +88,11 @@ void GaussianProcess<T>::train()
             break;
         }
     case FAST_APPROXIMATE:
-        //
+        {
+            #if GPLIB_USE_CUDA
+            cuTrain(this->X_train, this->gp_settings.hyperparameters);
+            #endif
+        }
         break;
 
     default:
