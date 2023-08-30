@@ -7,7 +7,6 @@
 #include <iostream>
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include <cub/cub.cuh>
 #include <iostream>
 #include <vector>
 #include <chrono>
@@ -19,9 +18,9 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/LU>
-#include <cuLinearSolver.hpp>
-#include "cuFAGPutils.hpp"
-#include "cusolver_utils.hpp"
+// #include <cuLinearSolver.hpp>
+// #include "cuFAGPutils.hpp"
+// #include "cusolver_utils.hpp"
 
 
 
@@ -49,12 +48,39 @@ M load_csv (const std::string & path) {
     return Map<const Matrix<typename M::Scalar, M::RowsAtCompileTime, M::ColsAtCompileTime, RowMajor>>(values.data(), rows, values.size()/rows);
 }
 
+MatrixXi all_combinations(const int n, const int p)
+{
+    MatrixXi all_comb((int)pow(n, p), p);
+    std::vector<MatrixXi> grids;
+    MatrixXi index1 = VectorXi::LinSpaced(n, 1, n).replicate(1, (int)pow(n, p-1));
+    grids.push_back(index1);
+    for (int ii = 1; ii < p; ii++)
+    {
+        MatrixXi index_ii = RowVectorXi::LinSpaced(n, 1, n).replicate((int)pow(n, ii), (int)pow(n, p - ii - 1));
+        grids.push_back(index_ii);
+        // grids[ii] = index_ii;
+    }
+    int idx = 0;
+    for (auto grid : grids)
+    {
+        all_comb.col(idx++) = grid.reshaped((int)pow(n, p), 1);
+    }
+    return all_comb;
+
+}
+
 template <typename T>
 int cuTrain(const Matrix<T, -1, -1> &x_train, hyperparameters_t<T> &hyp)
 {
-    /*MatrixXd x_train = load_csv<MatrixXd>("../input_matrices/x_train.csv");
-    MatrixXi eig_comb = eig_comb_in.cast<int>();
+    // MatrixXd x_train = load_csv<MatrixXd>("../input_matrices/x_train.csv");
+    // MatrixXi eig_comb = eig_comb_in.cast<int>();
 
+    MatrixXi eig_comb = all_combinations(5,4);
+    std::cout << "EIg_comb is a " << eig_comb.rows() << "x" << eig_comb.cols() << " and contains:\n" << eig_comb.topRows(11) << std::endl;
+    // TODO create a hyperparameter struct specifically for fast approximate GP!!
+    // TODO add a class template to gp_settings struct for the hyperparameters used. 
+
+    /*
     // Normalize
     VectorXd y_train = (y_train_tmp.array() - y_train_tmp.minCoeff()) / (y_train_tmp.maxCoeff() -  y_train_tmp.minCoeff());
     VectorXd y_test = (y_test_tmp.array() - y_test_tmp.minCoeff()) / (y_test_tmp.maxCoeff() - y_test_tmp.minCoeff());

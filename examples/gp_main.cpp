@@ -6,6 +6,8 @@
 #include "gplib.hpp"
 // #include "gp.hpp"
 
+#define GPLIB_USE_CUDA = 1
+
 using namespace Eigen;
 
 int main()
@@ -38,38 +40,40 @@ int main()
     VectorXd y_train = (y_train_tmp.array() - y_train_tmp.minCoeff()) / (y_train_tmp.maxCoeff() -  y_train_tmp.minCoeff());
     VectorXd y_test = (y_test_tmp.array() - y_test_tmp.minCoeff()) / (y_test_tmp.maxCoeff() - y_test_tmp.minCoeff());
 
-    // gp_settings_t<double> user_setting()
+    // gp_settings_t<double> user_setting(x_train, y_train);
+    // user_setting.
     GaussianProcess<double> gp(x_train, y_train);
+    gp.gp_settings.inference_type = FAST_APPROXIMATE;
 
     gp.train();
 
-    posterior_t<double> gp_posterior;
-    gp_posterior = gp.predict(x_test);
-    VectorXd y_star = gp_posterior.y_predicted;
+    // posterior_t<double> gp_posterior;
+    // gp_posterior = gp.predict(x_test);
+    // VectorXd y_star = gp_posterior.y_predicted;
 
-    // Writing on file
-    const static Eigen::IOFormat CSVFormat(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n");
+    // // Writing on file
+    // const static Eigen::IOFormat CSVFormat(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n");
 
-    std::ofstream file_X1_train("X1_train.csv");
-    file_X1_train << X1_train.format(CSVFormat);
+    // std::ofstream file_X1_train("X1_train.csv");
+    // file_X1_train << X1_train.format(CSVFormat);
 
-    std::ofstream file_X2_train("X2_train.csv");
-    file_X2_train << X2_train.format(CSVFormat);
+    // std::ofstream file_X2_train("X2_train.csv");
+    // file_X2_train << X2_train.format(CSVFormat);
 
-    std::ofstream file_y_train("y_train.csv");
-    file_y_train << y_train.format(CSVFormat);
+    // std::ofstream file_y_train("y_train.csv");
+    // file_y_train << y_train.format(CSVFormat);
 
-    std::ofstream file_X1_test("X1_test.csv");
-    file_X1_test << X1_test.format(CSVFormat);
+    // std::ofstream file_X1_test("X1_test.csv");
+    // file_X1_test << X1_test.format(CSVFormat);
 
-    std::ofstream file_X2_test("X2_test.csv");
-    file_X2_test << X2_test.format(CSVFormat);
+    // std::ofstream file_X2_test("X2_test.csv");
+    // file_X2_test << X2_test.format(CSVFormat);
 
-    std::ofstream file_y_test("y_test.csv");
-    file_y_test << y_test.format(CSVFormat);
+    // std::ofstream file_y_test("y_test.csv");
+    // file_y_test << y_test.format(CSVFormat);
 
-    std::ofstream file_y_star("y_predicted.csv");
-    file_y_star << y_star.format(CSVFormat);
+    // std::ofstream file_y_star("y_predicted.csv");
+    // file_y_star << y_star.format(CSVFormat);
 
     return 0;
 }

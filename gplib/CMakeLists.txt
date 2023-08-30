@@ -5,14 +5,16 @@ if(GPLIB_USE_CUDA)
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
         message(STATUS "Found CUDA compiler at ${CMAKE_CUDA_COMPILER} (version ${CMAKE_CUDA_COMPILER_VERSION})")
+        find_package(CUDAToolkit REQUIRED)
     else()
         message(FATAL_ERROR "No CUDA support")
     endif()
-endif()
+
     
 include_directories(
                     # ../include
-                    ${EIGEN_INCLUDE_DIRS})
+                    ${EIGEN_INCLUDE_DIRS}
+                    ${CUDAToolkit_INCLUDE_DIRS})
 
 file(GLOB SOURCES *.cpp)
 file(GLOB HEADERS ../include/*.hpp)
@@ -27,7 +29,32 @@ target_include_directories( GPlib INTERFACE
 
 target_link_libraries(  GPlib INTERFACE
                         Eigen3::Eigen
+                        CUDA::cublas
+                        CUDA::cusolver
                         )
+
+else()
+include_directories(
+    # ../include
+    ${EIGEN_INCLUDE_DIRS}
+    )
+
+file(GLOB SOURCES *.cpp)
+file(GLOB HEADERS ../include/*.hpp)
+add_library(GPlib INTERFACE)
+add_library(GPlib::GPlib ALIAS GPlib)
+
+target_include_directories( GPlib INTERFACE
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+            # ${CMAKE_CURRENT_LIST_DIR}
+            )
+
+target_link_libraries(  GPlib INTERFACE
+        Eigen3::Eigen
+        )
+
+endif()
 
 ## Preparing CMake files to be exported
 install(TARGETS ${PROJECT_NAME}

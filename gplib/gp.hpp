@@ -8,14 +8,15 @@
 #include "kernel.hpp"
 #include "gplib_misc.hpp"
 #include "gplib_structs.hpp"
+#include "cutrain.hpp"
 
 using namespace Eigen;
+// using namespace gplib;
 
 template <typename T>
 class GaussianProcess
 {
 private:
-    gp_settings_t<T> gp_settings;
     Kernel<T> kernel;
     MatrixXd X_train;
     VectorXd y_train;
@@ -34,6 +35,7 @@ public:
     ~GaussianProcess();
     void train(void);
     posterior_t<T> predict(Matrix<T, -1, -1> &X_test);
+    gp_settings_t<T> gp_settings;
 
     // Vector<T, -1> y_star;
     // Matrix<T, -1, -1> cov_star;
@@ -89,7 +91,7 @@ void GaussianProcess<T>::train()
         }
     case FAST_APPROXIMATE:
         {
-            #if GPLIB_USE_CUDA
+            #if 1//GPLIB_USE_CUDA
             cuTrain(this->X_train, this->gp_settings.hyperparameters);
             #endif
         }

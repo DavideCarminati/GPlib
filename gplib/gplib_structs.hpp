@@ -8,6 +8,9 @@
 
 using namespace Eigen;
 
+// namespace gplib
+// {
+
 template <typename T>
 struct posterior_t
 {
@@ -55,7 +58,7 @@ struct gp_settings_t
         Matrix<T, -1, -1> X_train;
         Vector<T, -1> y_train;
 };
-
+// };
 
 
 #endif
