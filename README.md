@@ -1,4 +1,4 @@
-<img src="https://github.com/DavideCarminati/GPlib/images/gplib_logo.svg" alt="logo" width="300"/>
+<img src="./images/gplib_logo.svg" alt="logo" width="300"/>
 
 ## GPLib: a header-only library for Gaussian process models
 GPLib is a header-only library written in C++11 and CUDA. It implements the most used kernels and optimizers for hyperparameter learning.
