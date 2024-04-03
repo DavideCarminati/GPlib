@@ -1,5 +1,6 @@
 set(GPLIB_USE_CUDA ON)
 if(GPLIB_USE_CUDA)
+    set(CMAKE_CUDA_COMPILER "/usr/local/cuda-12.2/bin/nvcc")
     include(CheckLanguage)
     check_language(CUDA)
     if(CMAKE_CUDA_COMPILER)
